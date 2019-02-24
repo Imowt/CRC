@@ -28,52 +28,83 @@ class CRC {
         return message;
     }
 
+    private static void verifTaille(String message, String generateur) throws Exception {
+        if(message.length() < generateur.length()) throw new Exception("Taille du code generateur impossible avec ce message");
+    }
+
     private static void calculer() throws Exception {
         String generateur = demandeMot("Code generateur : ");
         String message = demandeMot("Message en binaire : ");
 
         String code = message;
-        while (code.length() < (message.length() + generateur.length() - 1))
-            code = code + "0";
+
+        // On ajoute les 0 au code
+        for(int i = 0; i < generateur.length() ; i++) {
+            if(generateur.charAt(i) == '0') { generateur = generateur.substring(i+1,generateur.length()); i--; }
+            else break; 
+        }
+        verifTaille(message, generateur);
+
+        int polynome = generateur.length() - 1;
+        System.out.println("POLYNOME : " + polynome);
+        for(int i = 0; i < polynome; i++)
+            code += "0";
+
+        System.out.println("Code avec ajout des 0 : " + code );
         code = message + div(code, generateur);
         System.out.println("Code CRC à transmettre : " + code);
     }
 
     static void verification() throws Exception {
         String generateur = demandeMot("Code generateur :  ");
-        String recu = demandeMot("Code du message : ");
-        if (Integer.parseInt(div(recu, generateur)) == 0)
+        String message = demandeMot("Code du message : ");
+        verifTaille(message, generateur);
+        // Si le reste de la division est 0, il n'y a pas d'erreur
+        if (Integer.parseInt(div(message, generateur)) == 0)
             System.out.println("Le code reçu ne contient pas d'erreur");
         else
             System.out.println("Le code reçu contient une/des erreur(s).");
     }
 
     private static String div(String code, String generateur) {
-        int pointer = generateur.length();
-        String result = code.substring(0, pointer);
-        String remainder = "";
+        int indice = generateur.length();
+        String resultat = code.substring(0, indice);
+        String reste = "";
+
+        // Première division 
         for (int i = 0; i < generateur.length(); i++) {
-            if (result.charAt(i) == generateur.charAt(i))
-                remainder += "0";
+            if (resultat.charAt(i) == generateur.charAt(i))
+                reste += "0";
             else
-                remainder += "1";
+                reste += "1";
         }
-        while (pointer < code.length()) {
-            if (remainder.charAt(0) == '0') {
-                remainder = remainder.substring(1, remainder.length());
-                remainder = remainder + String.valueOf(code.charAt(pointer));
-                pointer++;
+        System.out.println("Etape division : ");
+        System.out.println(resultat);
+        System.out.println(generateur);
+        System.out.println("-------");
+        System.out.println(reste);
+        while (indice < code.length()) {
+            // Si le premier char du reste est 0, on recupere que la suite
+            if (reste.charAt(0) == '0') {
+                reste = reste.substring(1, reste.length());
+                reste += String.valueOf(code.charAt(indice));
+                indice++;
             }
-            result = remainder;
-            remainder = "";
+            resultat = reste;
+            reste = "";
             for (int i = 0; i < generateur.length(); i++) {
-                if (result.charAt(i) == generateur.charAt(i))
-                    remainder += "0";
+                if (resultat.charAt(i) == generateur.charAt(i))
+                    reste += "0";
                 else
-                    remainder += "1";
+                    reste += "1";
             }
+            System.out.println("Etape division : ");
+            System.out.println(resultat);
+            System.out.println(generateur);
+            System.out.println("-------");
+            System.out.println(reste);
         }
-        return remainder.substring(1, remainder.length());
+        return reste.substring(1, reste.length());
     }
 
     public static void main(String args[]) throws Exception {
