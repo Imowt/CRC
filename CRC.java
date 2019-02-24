@@ -135,6 +135,7 @@ class CRC {
                 reste += String.valueOf(code.charAt(indice));
                 indice++;
             }
+
             resultat = reste;
             reste = "";
             for (int i = 0; i < generateur.length(); i++) {
@@ -149,6 +150,22 @@ class CRC {
             System.out.println("-------");
             System.out.println(reste);
         }
+        // Dans certains cas le dernier reste avant la fin commence par un 1 et est divisible par le générateur
+        if(reste.charAt(0) == '1' && reste.length() == generateur.length()) {
+            resultat = reste;
+            reste = "";
+            for (int i = 0; i < generateur.length(); i++) {
+                if (resultat.charAt(i) == generateur.charAt(i))
+                    reste += "0";
+                else
+                    reste += "1";
+            }
+        }
+        System.out.println("Etape division : ");
+        System.out.println(resultat);
+        System.out.println(generateur);
+        System.out.println("-------");
+        System.out.println(reste);
         return reste.substring(1, reste.length());
     }
 
