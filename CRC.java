@@ -1,8 +1,17 @@
 import java.util.*;
 import java.io.*;
 
+/**
+ * @author Valentin Dulong
+ * @author Julien Houchard
+ */
 class CRC {
 
+    /**
+     * Methode mettant en place un menu dans la console et
+     * attendant une réponse
+     * @throws Exception Si jamais un problème survient avec le Scanner
+     */
     private static void menu() throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.println("1 - Verification | 2 - Calculer mot CRC");
@@ -20,6 +29,14 @@ class CRC {
         }
     }
 
+    /**
+     * Methode demandant un mot à l'utilisateur et attendant une réponse
+     * @param demande
+     *          La demande affichée à l'utilisateur
+     * @return le mot binaire saisi
+     * @throws Exception Si jamais un problème survient avec le Scanner ou
+     *                   si le mot saisi est invalide
+     */
     private static String demandeMot(String demande) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.println(demande);
@@ -28,27 +45,39 @@ class CRC {
         return message;
     }
 
+    /**
+     * Méthode verifiant si la taille du generateur est valide par rapport
+     * au message
+     * @param message
+     *            Le message binaire
+     * @param generateur
+     *            Le generateur
+     * @throws Exception Si la taille du generateur est pas valide
+     */
     private static void verifTaille(String message, String generateur) throws Exception {
         if(message.length() < generateur.length()) throw new Exception("Taille du code generateur impossible avec ce message");
     }
 
+    /**
+     * Codage du message a saisir par l'utilisateur par le generateur a saisir aussi
+     * @throws Exception Si problème avec un Scanner ou une action invalide
+     */
     private static void calculer() throws Exception {
         String generateur = demandeMot("Code generateur : ");
         String message = demandeMot("Message en binaire : ");
 
         String code = message;
 
-        // On ajoute les 0 au code
+        // On retire les 0 au code generateur s'il y en a au début
         for(int i = 0; i < generateur.length() ; i++) {
             if(generateur.charAt(i) == '0') { generateur = generateur.substring(i+1,generateur.length()); i--; }
-            else break; 
+            else break;
         }
-        verifTaille(message, generateur);
 
         int polynome = generateur.length() - 1;
         System.out.println("POLYNOME : " + polynome);
 
-        // On ajoute les '0' correspond au polynome
+        // On ajoute les '0' correspondant au polynome
         for(int i = 0; i < polynome; i++)
             code += "0";
 
@@ -57,6 +86,11 @@ class CRC {
         System.out.println("Code CRC à transmettre : " + code);
     }
 
+    /**
+     * Methode verifiant si le message est correct par rapport au generateur
+     * @throws Exception Si problème avec un Scanner ou si la taille n'est pas
+     * valide
+     */
     static void verification() throws Exception {
         String generateur = demandeMot("Code generateur :  ");
         String message = demandeMot("Code du message : ");
@@ -68,12 +102,21 @@ class CRC {
             System.out.println("Le code reçu contient une/des erreur(s).");
     }
 
+    /**
+     * Methode affichant toute la demarche avec les divisions et retournant
+     * le reste
+     * @param code
+     *          le code binaire
+     * @param generateur
+     *          le generateur associé au code
+     * @return le reste de la division
+     */
     private static String div(String code, String generateur) {
         int indice = generateur.length();
         String resultat = code.substring(0, indice);
         String reste = "";
 
-        // Première division 
+        // Première division
         for (int i = 0; i < generateur.length(); i++) {
             if (resultat.charAt(i) == generateur.charAt(i))
                 reste += "0";
@@ -109,6 +152,12 @@ class CRC {
         return reste.substring(1, reste.length());
     }
 
+    /**
+     * Methode de main
+     * @param args
+     *          Tableau d'argument
+     * @throws Exception Si un probleme survient lors de son execution
+     */
     public static void main(String args[]) throws Exception {
         menu();
     }
