@@ -47,6 +47,8 @@ class CRC {
 
         int polynome = generateur.length() - 1;
         System.out.println("POLYNOME : " + polynome);
+
+        // On ajoute les '0' correspond au polynome
         for(int i = 0; i < polynome; i++)
             code += "0";
 
